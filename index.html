@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="media\Y Locked.png">
+
+  <title>Interactive Mapping ..</title>
+	
+  <!-- jQuery-->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+
+  <!-- Leaflet (CSS and JS) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+  integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+  crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+  integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+  crossorigin=""></script>
+
+  <!-- PapaParse -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/js/fontawesome.min.js"></script>
+
+  <!-- leaflet-providers-->
+  <script src="https://unpkg.com/leaflet-providers@1.10.2/leaflet-providers.js"></script>
+  
+  <!-- Leaflet.awesome-markers v2.0.4, manually updated to svg to allow hex and material icons -->
+  <link rel="stylesheet" type="text/css" href="scripts/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css">
+  <script type="text/javascript" src="scripts/Leaflet.awesome-markers/dist/leaflet.awesome-markers.js"></script>
+
+  <!-- Leaflet Markercluster -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
+  <script type="text/javascript" src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+  <!-- Leaflet Markercluster layer support -->
+  <script src="https://unpkg.com/leaflet.markercluster.layersupport@2.0.1/dist/leaflet.markercluster.layersupport.js"></script>
+
+  <!-- Leaflet control geocoder -->
+  <link rel="stylesheet" href="leaflet-search-master\dist\leaflet-search.src.css" />
+  <script src="Search.js"></script>
+  <script src="leaflet-search-master\dist\leaflet-search.src.js"></script>
+
+  <!-- Leaflet Ruler-->
+  <link rel="stylesheet" href="leaflet-ruler-master\src\leaflet-ruler.css" />
+  <script src="leaflet-ruler-master\src\leaflet-ruler.js"></script> 
+
+  <!-- Locate Control -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.72.0/L.Control.Locate.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.72.0/L.Control.Locate.min.js"></script>
+
+  <!-- jQuery-CSV -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.11/jquery.csv.min.js"></script>
+
+  <!-- Custom style sheet -->
+  <link rel="stylesheet" type="text/css" href="style.css">
+
+  <!-- DataTables -->
+  <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css" />
+
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+<body>
+	<script language="javascript"></script>
+<script>
+  //var password = prompt('Password Required:', '');
+  //if (password !== '16533') {
+    //window.location = 'https://github.com/Nour-rabea/Egypt-M.R';
+  //}
+</script>
+	
+  <div class="loader">Loading...</div>
+	<div id="map"></div>
+	<button id="container" class="btn">Prices Analysis</button>
+	<button id="container1" class="btn" onclick="masterplan()">Master Plans</button>
+  <button id="container2" class="btn" onclick="threshold()">Threshold 5km</button>
+  
+  <table id="maptable" class="display"></table>
+
+	
+<script type="text/javascript">
+	var map = L.map('map', {
+		attributionControl: false,
+		zoomControl: false,
+		scrollWheelZoom: true,
+		tap: false
+	}).setView([30.02,31.55], 11); // default center is overridden by Google Sheet options and points
+    var OpenStreetMap_Mapnik = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	maxZoom: 19
+});
+    var TopPlusOpen_Grey = L.tileLayer('http://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web_grau/default/WEBMERCATOR/{z}/{y}/{x}.png', {
+      maxZoom: 19
+    });
+//Leaflet layer control
+    var baseMaps = {
+      'Details Map': TopPlusOpen_Grey,
+      'Colored Map': OpenStreetMap_Mapnik,
+    }
+    var overlayMaps = {
+  'Satellite': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19
+})
+    }
+///L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.{ext}?api_key=30c612bc-8fb1-4418-8b7b-354f885c920d', {
+///minZoom: 0,
+///maxZoom: 20,
+///ext: 'jpg'
+///}
+
+
+///var redIcon = L.icon({
+   // iconUrl: 'media/home icon.png', // استبدل هذا الرابط برابط أيقونة حمراء
+   // iconSize: [22, 32], // حجم الأيقونة
+  //  iconAnchor: [12, 41], // النقطة التي تشير إلى موقع الـ Marker
+  //  popupAnchor: [1, -34], // موقع ظهور البالون المنبثق
+   // shadowSize: [41, 41] // حجم الظل
+///});
+
+//var marker1 = L.marker([29.95529311152194, 31.56046910936151], { icon: redIcon })
+//.bindTooltip("<b>" + "Ever New Cairo" + '</b><br>' +"Cred Developments").addTo(map);
+//var marker2 = L.marker([29.97019949360933, 31.711242368543274], { icon: redIcon })
+//.bindTooltip("<b>" + "Castle Landmark" + '</b><br>' +"Cred Developments").addTo(map);
+//var marker3 = L.marker([30.00273665819171, 30.968602517717347], { icon: redIcon })
+//.bindTooltip("<b>" + "Ever" + '</b><br>' +"Cred Developments").addTo(map);
+
+	// وظيفة لإخفاء وإظهار العلامات بناءً على مستوى التكبير
+//map.on('zoomend', function() {
+   // var currentZoom = map.getZoom();
+    //if (currentZoom > 14) {
+     //   map.removeLayer(marker1);
+     //   map.removeLayer(marker2);
+     //   map.removeLayer(marker3);
+  //  } else {
+   //     map.addLayer(marker1);
+    //    map.addLayer(marker2);
+    //    map.addLayer(marker3);
+   // }
+ // });
+
+//Json data search
+const searchLayer = L.geoJSON(Search, {
+  onEachFeature: function(feature, layer) {
+    layer.bindPopup(feature.properties.Project);
+  }
+});
+
+//ruler
+var options = {
+    position: 'bottomright',
+    lengthUnit: {
+        display: 'km',
+        label: 'Distance:',
+        decimal: 2,
+    },
+};
+
+
+
+  let isDrawing = false;
+  let isDrawingMode = false;
+  let drawnLines = [];
+  let currentLine = [];
+  const drawLayer = L.layerGroup().addTo(map);
+
+  function redrawLines() {
+    drawLayer.clearLayers();
+    for (const line of drawnLines) {
+      L.polyline(line, { color: 'red', weight: 3 }).addTo(drawLayer);
+    }
+  }
+
+
+
+  // زر ESC لإيقاف وضع الرسم فقط
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && isDrawingMode) {
+      isDrawingMode = false;
+      document.querySelector('.leaflet-control-draw').style.backgroundColor = "#2e4053";
+      map.dragging.enable();
+    }
+  });
+
+  // بدء السحب للرسم
+  map.on("mousedown", (e) => {
+    if (!isDrawingMode) return;
+    isDrawing = true;
+    currentLine = [e.latlng];
+  });
+
+  // السحب المستمر
+  map.on("mousemove", (e) => {
+    if (!isDrawingMode || !isDrawing) return;
+    currentLine.push(e.latlng);
+    redrawLines();
+    L.polyline(currentLine, { color: 'red', weight: 3 }).addTo(drawLayer);
+  });
+
+  // إنهاء السحب
+  map.on("mouseup", () => {
+    if (!isDrawingMode || !isDrawing) return;
+    isDrawing = false;
+    drawnLines.push([...currentLine]);
+    currentLine = [];
+    redrawLines();
+  });
+
+  // تحديث الرسم عند تحريك أو تكبير الخريطة
+  map.on("moveend zoomend", () => {
+    redrawLines();
+  });
+</script>
+
+  
+<script>
+	var myImageLayer;
+	function masterplan() {
+		var imageUrl1 = 'media/layout.png';
+		var imageBounds1 = [[29.994293, 31.574531], [29.933195, 31.521640], [29.921658, 31.583310]];
+		var imageUrl2 = 'media/Ever New Cairo.png';
+		var imageBounds2 = [[29.95864958443034, 31.555857971186946], [29.95628869483722, 31.567468411543455], [29.95044128392988, 31.566693928857383], [29.95128870158816, 31.55430819641312]];
+		var imageUrl3 = 'media/Castle LandMark.png';
+		var imageBounds3 = [[29.97287392352009, 31.711373480696945], [29.97053381500239, 31.715168550377484], [29.9679917154688, 31.712350924705873], [29.970716608032465, 31.709196271401364]];
+		var imageUrl4 = 'media/Ever October.png';
+		var imageBounds4 = [[30.00261057433003, 30.964877735753902], [29.99936753205223, 30.968890630645248], [30.002336587932106, 30.972919406616146],[30.005060786741346, 30.97019297183146]];
+		
+		if (myImageLayer) {
+			map.removeLayer(myImageLayer);
+			myImageLayer = null;
+		} else {
+			myImageLayer = L.layerGroup([
+				L.imageOverlay(imageUrl1, imageBounds1),
+				L.imageOverlay(imageUrl2, imageBounds2),
+				L.imageOverlay(imageUrl3, imageBounds3),
+				L.imageOverlay(imageUrl4, imageBounds4)
+			]);
+			myImageLayer.addTo(map);
+		}
+	}
+</script>
+
+<script>
+  var circle1, circle2, circle3;
+  var circlesVisible = false;
+  
+  function threshold() {
+      if (circlesVisible) {
+          // إزالة الدوائر إذا كانت موجودة
+          map.removeLayer(circle1);
+          map.removeLayer(circle2);
+          map.removeLayer(circle3);
+          circlesVisible = false;
+      } else {
+          // إنشاء الدوائر
+          circle1 = L.circle([29.955341154793615, 31.559919417160515], {
+              color: 'red',        // لون الحافة
+              fillOpacity: 0.02,   // تعبئة شفافة (بلا لون)
+              radius: 5000         // نصف القطر بالأمتار
+          }).addTo(map);
+  
+          circle2 = L.circle([30.001515911679736, 30.969413026276538], {
+              color: 'red',
+              fillOpacity: 0.02,
+              radius: 5000
+          }).addTo(map);
+  
+          circle3 = L.circle([29.970531432764254, 31.71280168072229], {
+              color: 'red',
+              fillOpacity: 0.02,
+              radius: 5000
+          }).addTo(map);
+  
+          // دالة لتغيير الشفافية (لإعطاء تأثير الوميض على الحافة فقط)
+          function animateCircle(circle) {
+              var opacity = 1;
+              var increasing = false;
+  
+              setInterval(function() {
+                  if (increasing) {
+                      opacity += 0.1;
+                      if (opacity >= 1) increasing = false;
+                  } else {
+                      opacity -= 0.1;
+                      if (opacity <= 0) increasing = true;
+                  }
+  
+                  circle.setStyle({ opacity: opacity });
+              }, 50);
+          }
+  
+          // بدء التحريك
+          animateCircle(circle1);
+          animateCircle(circle2);
+          animateCircle(circle3);
+  
+          circlesVisible = true;
+      }
+  }
+  </script>
+  
+	
+  <script type="text/javascript" src="./google-doc-url.js"></script>
+  <script type="text/javascript" src="./scripts/constants.js"></script>
+  <script type="text/javascript" src="./scripts/palette.js"></script>
+  <script type="text/javascript" src="./scripts/polylabel.js"></script>
+  <script type="text/javascript" src="./scripts/map.js"></script>
+
+</body>
+</html>
