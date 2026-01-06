@@ -693,7 +693,7 @@ return group;
     createDocumentSettings(options);
 
     ///document.title = getSetting('_mapTitle');
-    document.title = 'Market Research';
+    document.title = 'E.M.R';
     addBaseMap();
 
     // Add point markers to the map
