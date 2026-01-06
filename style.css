@@ -177,14 +177,14 @@ top: +5%;
     align-items: center; /* Center vertically */
     width: 30px;
     height: 30px;
-    background: url('media/c.png') no-repeat center center #ffffff; /* Replace with your draw icon */
+    background: #ffffff; /* Replace with your draw icon */
     border-radius: 4px;
     margin: 2px;
     text-decoration: none;
 }
 
 .leaflet-control-draw .draw-button:hover {
-    background: url('media/c.png') no-repeat center center #dddada; /* Hover effect */
+    background: #dddada; /* Hover effect */
 }
 
 .leaflet-control-draw .draw-button i.material-icons {
