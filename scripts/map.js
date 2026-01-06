@@ -949,7 +949,7 @@ return group;
    */
   function changeAttribution() {
     var attributionHTML = $('.leaflet-control-attribution')[0].innerHTML;
-    var credit = 'View <a href="' + 'https://www.cred-eg.com/' + '" target="_blank">Data</a>';
+    var credit = 'View <a href="' + 'https://nour-rabea.github.io/Egypt-M.R/' + '" target="_blank">Data</a>';
     var name = getSetting('_authorName');
     var url = getSetting('_authorURL');
 
