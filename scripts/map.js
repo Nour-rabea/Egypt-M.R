@@ -223,8 +223,8 @@ $(window).on('load', function() {
             $('table.display').css('color', colors[1]);
           }
         }
-      // Initialize DataTable
-      if (!$.fn.DataTable.isDataTable('#maptable')) {
+        // Initialize DataTable
+    if (!$.fn.DataTable.isDataTable('#maptable')) {
         table = $('#maptable').DataTable({
         paging: false,
         scrollCollapse: true,
@@ -234,14 +234,21 @@ $(window).on('load', function() {
         columns: generateColumnsArray(),
       });
 
-            // Show the DataTable
-            $('#maptable').show(); // Make sure the DataTable is visible
-            updateTable();// Call updateTable to populate the DataTable with current points
-            map.on('moveend', updateTable);
-            map.on('layeradd', updateTable);
-            map.on('layerremove', updateTable);
-        
-// Add mouseover event to table cells
+
+
+      } else {
+        // Show the DataTable
+        table = $('#maptable').DataTable();
+        $('#maptable').closest('.dataTables_wrapper').show();
+        $('#maptable').show();
+      }
+
+      updateTable();
+      map.on('moveend', updateTable);
+      map.on('layeradd', updateTable);
+      map.on('layerremove', updateTable);
+
+// Add mouseover event (Analysis SQM Price) to table cells
 $('#maptable tbody').on('mouseover', 'td', function() {
   var rowData = table.row(this).data(); // Get the data for the row after sorting/filtering
   var point = rowData[rowData.length - 1]; // Assuming the last element is the full point object
@@ -258,9 +265,9 @@ $('#maptable tbody').on('mouseover', 'td', function() {
       left: e.pageX + 10 + 'px' // Positioning the tooltip to the right of the mouse pointer
     });
   });
-}).on('mouseout', function() {
-  // Remove the tooltip when the mouse leaves the cell
-  $('.custom-tooltip').remove();
+  }).on('mouseout', function() {
+    // Remove the tooltip when the mouse leaves the cell
+    $('.custom-tooltip').remove();
 });
     
       // Add click event to table rows
@@ -270,13 +277,12 @@ $('#maptable tbody').on('mouseover', 'td', function() {
         var lat = point['Latitude'];
         var lon = point['Longitude'];
         if (!isNaN(lat) && !isNaN(lon)) { // Check if the lat and lon are valid numbers
-          map.flyTo([lat, lon], 15, { animate: true, duration: 3 }); // Fly to the coordinates
+          map.flyTo([lat, lon], 15, { animate: true, duration: 1.5 }); // Fly to the coordinates
           drawCircle(lat, lon); // Draw a circle at the location
         } else {
           alert("Invalid coordinates.");
         }
       });
-    }
 
 function drawCircle(lat, lon) {
   // Define the circle options
@@ -287,11 +293,11 @@ function drawCircle(lat, lon) {
       radius: 150          // Circle radius in meters
       };
 
-  // Create the circle
-  var circle = L.circle([lat, lon], circleOptions).addTo(map);
+      // Create the circle
+      var circle = L.circle([lat, lon], circleOptions).addTo(map);
 
-  // Return the circle object (optional)
-  return circle;}
+      // Return the circle object (optional)
+      return circle;}
 
   function updateTable() {
     var pointsVisible = [];
@@ -331,19 +337,12 @@ function drawCircle(lat, lon) {
 }}
 
 function hideTable() {
-  // Check if the DataTable is initialized
-  if ($.fn.DataTable.isDataTable('#maptable')) {
-    // Destroy the DataTable instance before hiding
-    $('#maptable').DataTable().clear().destroy();
-  }
-
-  // Hide the entire table element, including the header
-  $('#maptable').hide(); // Hide the DataTable
-
-  // Optionally, hide the header explicitly if needed
-  $('#maptable thead').hide(); // Hide the table header
+    // Check if the DataTable is initialized
+  $('#maptable').closest('.dataTables_wrapper').hide();
+  $('#maptable').hide();
 
   $('#map').css('height', '100vh'); // Reset the map height to full screen
+  map.invalidateSize(); // Refresh the map
 }
 
 completePoints = true;
