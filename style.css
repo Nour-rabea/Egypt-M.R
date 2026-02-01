@@ -177,19 +177,29 @@ top: +5%;
     align-items: center; /* Center vertically */
     width: 30px;
     height: 30px;
-    background: #ffffff; /* Replace with your draw icon */
+    background:#ffffff; /* Replace with your draw icon */
     border-radius: 4px;
     margin: 2px;
     text-decoration: none;
 }
 
 .leaflet-control-draw .draw-button:hover {
-    background: #dddada; /* Hover effect */
+    background:#dddada; /* Hover effect */
 }
 
 .leaflet-control-draw .draw-button i.material-icons {
     color: #474646;
 }
+
+.circle-label {
+    background: transparent;
+    border: none;
+    color: red;
+    font-weight: normal;
+    font-size: 16px;
+    box-shadow: none;
+}
+
 
 /* Customize the default tooltip appearance */
 .custom-tooltip {
