@@ -129,14 +129,14 @@ $(window).on('load', function() {
           icon: icon,
           title: point['Project']// ⭐ مهم جداً للبحث
         })
-          .bindPopup("<b>" + point['Project'] + '</b><br>' +
-          point['Developer'] + '</b><br>' +
-          (point['Image'] ? ('<img src="' + point['Image'] + '"><br>') : '') +
-          point['Hotline'] + '</b><br>' +
-          point['Website'] + '</b><br>' +
-          point['Brochure'] + '</b><br>' +
-          point['Head Offices'] + '</b><br>' +
-          point['Area'] + '</b> Acre <br>')
+          .bindPopup("<b>" + point['Project'] + "</b><br>" +
+            point['Developer'] + "<br>" +
+            (point['Image'] ? '<img src="' + point['Image'] + '"><br>' : "") +
+            "<b>Hotline: </b>" + (point['Hotline'] ? point['Hotline'] + "<br>" : "") +
+            (point['Website'] ? '<b><a href="' + point['Website'] + '" target="_blank" rel="noopener noreferrer">Website</a></b><br>' : "") +
+            (point['Brochure'] ? point['Brochure'] + "<br>" : "") +
+            "<b>Head Offices: </b><br>" + (point['Head Offices'] ? point['Head Offices'] + "<br>" : "") +
+            "<b>Area: </b>" + (point['Area'] ? point['Area'] + " Acre<br>" : ""))
           .bindTooltip("<b>" + point['Project'] + '</b><br>' +
           point['Developer'], {permanent: false, direction: 'right'});
 
