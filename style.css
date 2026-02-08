@@ -193,13 +193,12 @@ top: +5%;
 
 .circle-label {
     background: transparent;
-    border: none;
+    border: whitesmoke;
     color: red;
     font-weight: normal;
-    font-size: 16px;
+    font-size: 17px;
     box-shadow: none;
 }
-
 
 /* Customize the default tooltip appearance */
 .custom-tooltip {
