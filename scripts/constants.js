@@ -44,6 +44,8 @@ var constants = {
   _polylinesLegendPos: 'Polyline Legend Position',
   _polylinesLegendIcon: 'Polyline Legend Icon',
   _polylinesWeight: 'Polyline Thickness',
+  _Target: 'Target Point',
+  _TargetN: 'Target Name',
 	// Polygon Map Display
 	_polygonsLegendTitle: 'Polygon Legend Title',
 	_polygonsLegendPosition: 'Polygon Legend Position',
