@@ -8,6 +8,7 @@ $(window).on('load', function() {
   var completePoints = false;
   var completePolygons = false;
   var completePolylines = false;
+  var searchLayer = L.layerGroup();
 
   /**
    * Returns an Awesome marker with specified parameters
@@ -124,7 +125,10 @@ $(window).on('load', function() {
         );
 
       if (point.Latitude !== '' && point.Longitude !== '') {
-        var marker = L.marker([point.Latitude, point.Longitude], {icon: icon})
+        var marker = L.marker([point.Latitude, point.Longitude], {
+          icon: icon,
+          title: point['Project']// ⭐ مهم جداً للبحث
+        })
           .bindPopup("<b>" + point['Project'] + '</b><br>' +
           point['Developer'] + '</b><br>' +
           (point['Image'] ? ('<img src="' + point['Image'] + '"><br>') : '') +
@@ -139,7 +143,8 @@ $(window).on('load', function() {
         if (layers !== undefined && layers.length !== 1) {
           marker.addTo(layers[point.Group]);
         }
-
+        
+        searchLayer.addLayer(marker);// مهم للبحث
         markerArray.push(marker);
       }
     }
@@ -1033,21 +1038,41 @@ map.addControl(drawControl);
     });
        addTitle();
  
-    //control search
-    const searchControl = new L.Control.Search({
-      layer: searchLayer,
-      zoom: "13",
-      propertyName: 'Project'
-    }).setPosition('bottomright');
-    map.addControl(searchControl);
-    map.removeLayer(searchLayer);
+    //control search ده اللي يخص search في الملف
+const searchControl = new L.Control.Search({
+  layer: searchLayer,
+  zoom: 16,
+  initial: false,
+  marker: false
+}).setPosition('bottomright');
+
+map.addControl(searchControl);
+let searchCircle;
+
+searchControl.on('search:locationfound', function(e) {
+
+  // شيل الدايرة القديمة لو موجودة
+  if (searchCircle) {
+    map.removeLayer(searchCircle);
   }
+
+  // ارسم دايرة حمرا جديدة
+  searchCircle = L.circle(e.latlng, {
+    radius: 150,
+    color: 'red',
+    fillColor: 'red',
+    fillOpacity: 0.2,
+    weight: 2
+  }).addTo(map);
+
+});
+}
 
   /**
    * Returns the value of a setting s
    * getSetting(s) is equivalent to documentSettings[constants.s]
    */
-  function getSetting(s) {
+  window.getSetting = function (s) {
     return documentSettings[constants[s]];
   }
 
