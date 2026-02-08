@@ -258,7 +258,7 @@ $('#maptable tbody').on('mouseover', 'td', function() {
   var rowData = table.row(this).data(); // Get the data for the row after sorting/filtering
   var point = rowData[rowData.length - 1]; // Assuming the last element is the full point object
   // Update the tooltip content dynamically based on the current row's data
-  var tooltipContent = point['Analysis SQM.P']; // Content to show in the tooltip  
+  var tooltipContent = point['Analysis SQM']; // Content to show in the tooltip  
   // Remove any existing tooltip to prevent duplication
   $('.custom-tooltip').remove();
   // Create the tooltip element
