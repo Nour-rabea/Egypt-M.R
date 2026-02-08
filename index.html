@@ -104,13 +104,6 @@
 })
     }
 
-	//Json data search
-const searchLayer = L.geoJSON(Search, {
-  onEachFeature: function(feature, layer) {
-    layer.bindPopup(feature.properties.Project);
-  }
-});
-
 //ruler
 var options = {
     position: 'bottomright',
