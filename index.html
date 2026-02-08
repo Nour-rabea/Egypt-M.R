@@ -71,18 +71,11 @@
 
 <body>
 	<script language="javascript"></script>
-<script>
-  //var password = prompt('Password Required:', '');
-  //if (password !== 'n') {
-    //window.location = 'https://nour-rabea.github.io/Egypt-M.R/';
-  //}
-</script>
-	
-  <div class="loader">Loading...</div>
+	<div class="loader">Loading...</div>
 	<div id="map"></div>
 	<button id="container" class="btn">Prices Analysis</button>
 	<button id="container1" class="btn" onclick="masterplan()">Master Plan</button>
-  <button id="container2" class="btn" onclick="threshold()">Thresholds KM</button>
+	<button id="container2" class="btn" onclick="threshold()">Thresholds KM</button>
   
   <table id="maptable" class="display"></table>
 
@@ -110,42 +103,6 @@
     maxZoom: 19
 })
     }
-///L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.{ext}?api_key=30c612bc-8fb1-4418-8b7b-354f885c920d', {
-///minZoom: 0,
-///maxZoom: 20,
-///ext: 'jpg'
-///}
-
-
-var redIcon = L.icon({
-  iconUrl: 'media/home icon.png', // استبدل هذا الرابط برابط أيقونة حمراء
-  iconSize: [26, 32], // حجم الأيقونة
-  iconAnchor: [12, 41], // النقطة التي تشير إلى موقع الـ Marker
-  popupAnchor: [1, -34], // موقع ظهور البالون المنبثق
-   shadowSize: [41, 41] // حجم الظل
-});
-
-var marker1 = L.marker([29.972873054329458, 31.331225607413156], { icon: redIcon })
-.bindTooltip("<b>" + "Home" + '</b><br>' +"American Becho City").addTo(map);
-
-	// وظيفة لإخفاء وإظهار العلامات بناءً على مستوى التكبير
-//map.on('zoomend', function() {
-   // var currentZoom = map.getZoom();
-    //if (currentZoom > 14) {
-     //   map.removeLayer(marker1);
-
-  //  } else {
-   //     map.addLayer(marker1);
-
-   // }
- // });
-
-//Json data search
-const searchLayer = L.geoJSON(Search, {
-  onEachFeature: function(feature, layer) {
-    layer.bindPopup(feature.properties.Project);
-  }
-});
 
 //ruler
 var options = {
@@ -169,9 +126,6 @@ var options = {
       L.polyline(line, { color: 'red', weight: 3 }).addTo(drawLayer);
     }
   }
-
-
-
   // زر ESC لإيقاف وضع الرسم فقط
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && isDrawingMode) {
@@ -180,14 +134,12 @@ var options = {
       map.dragging.enable();
     }
   });
-
   // بدء السحب للرسم
   map.on("mousedown", (e) => {
     if (!isDrawingMode) return;
     isDrawing = true;
     currentLine = [e.latlng];
   });
-
   // السحب المستمر
   map.on("mousemove", (e) => {
     if (!isDrawingMode || !isDrawing) return;
@@ -195,7 +147,6 @@ var options = {
     redrawLines();
     L.polyline(currentLine, { color: 'red', weight: 3 }).addTo(drawLayer);
   });
-
   // إنهاء السحب
   map.on("mouseup", () => {
     if (!isDrawingMode || !isDrawing) return;
@@ -204,7 +155,6 @@ var options = {
     currentLine = [];
     redrawLines();
   });
-
   // تحديث الرسم عند تحريك أو تكبير الخريطة
   map.on("moveend zoomend", () => {
     redrawLines();
@@ -231,31 +181,66 @@ var options = {
 </script>
 
 <script>
-  var circle1, circle2, circle3;
+  var marker0, circle1, marker1, circle2, marker2, circle3, marker3;
   var circlesVisible = false;
+  var markersVisible = false;
   
   function threshold() {
-      if (circlesVisible) {
+      if (circlesVisible && markersVisible) {
           // إزالة الدوائر إذا كانت موجودة
           map.removeLayer(circle1);
           map.removeLayer(circle2);
           map.removeLayer(circle3);
+          map.removeLayer(marker0);
+          map.removeLayer(marker1);
+          map.removeLayer(marker2);
+          map.removeLayer(marker3);
+
           circlesVisible = false;
+          markersVisible = false;
       } else {
           // إنشاء الدوائر
-
           function getPointOnCircle(center, radiusMeters) {
     const lat = center[0];
     const lng = center[1];
-
     // تحويل المتر لدرجات (تقريب كافي للعرض)
     const offsetLng = radiusMeters / (111320 * Math.cos(lat * Math.PI / 180));
-
     return [lat, lng + offsetLng];
 }
 
+var targetPointStr = getSetting('_Target');
+var center = [29.97, 31.33];
 
-const center = [29.97287044552871, 31.331206431846415];
+if (targetPointStr) {
+    var parts = targetPointStr.split(',');
+    if (parts.length === 2) {
+        center = [
+            parseFloat(parts[0].trim()),
+            parseFloat(parts[1].trim())
+        ];
+    }
+}
+
+  var redIcon = L.icon({
+    iconUrl: 'media/home icon.png', // استبدل هذا الرابط برابط أيقونة حمراء
+    iconSize: [26, 32], // حجم الأيقونة
+    iconAnchor: [12, 41], // النقطة التي تشير إلى موقع الـ Marker
+    popupAnchor: [1, -34], // موقع ظهور البالون المنبثق
+    shadowSize: [41, 41] // حجم الظل
+  });
+marker0 = L.marker(getPointOnCircle(center, 0), { icon: redIcon })
+.bindTooltip("<b>" + getSetting('_TargetN') ).addTo(map);
+	// وظيفة لإخفاء وإظهار العلامات بناءً على مستوى التكبير
+  map.on('zoomend', function () {
+    if (!markersVisible) return; // 🔴 أهم سطر
+
+    var currentZoom = map.getZoom();
+    if (currentZoom < 9) {
+        map.removeLayer(marker0);
+    } else {
+        map.addLayer(marker0);
+    }
+});
 
 circle1 = L.circle(center, {
     color: 'red',
@@ -263,7 +248,7 @@ circle1 = L.circle(center, {
     radius: 5000
 }).addTo(map);
 
-L.marker(getPointOnCircle(center, 5500), {
+marker1 = L.marker(getPointOnCircle(center, 3850), {
     icon: L.divIcon({
         className: 'circle-label',
         html: '5K'
@@ -276,7 +261,7 @@ circle2 = L.circle(center, {
     radius: 10000
 }).addTo(map);
 
-L.marker(getPointOnCircle(center, 10500), {
+marker2 = L.marker(getPointOnCircle(center, 8180), {
     icon: L.divIcon({
         className: 'circle-label',
         html: '10K'
@@ -289,15 +274,15 @@ circle3 = L.circle(center, {
     radius: 15000
 }).addTo(map);
 
-L.marker(getPointOnCircle(center, 15500), {
+marker3 = L.marker(getPointOnCircle(center, 13155), {
     icon: L.divIcon({
         className: 'circle-label',
         html: '15K'
     })
 }).addTo(map);
   
-          // دالة لتغيير الشفافية (لإعطاء تأثير الوميض على الحافة فقط)
-          function animateCircle(circle) {
+// دالة لتغيير الشفافية (لإعطاء تأثير الوميض على الحافة فقط)
+          function animateCircle(circle, marker) {
               var opacity = 1;
               var increasing = false;
   
@@ -309,17 +294,20 @@ L.marker(getPointOnCircle(center, 15500), {
                       opacity -= 0.1;
                       if (opacity <= 0) increasing = true;
                   }
-  
+                  // وميض الحافة
                   circle.setStyle({ opacity: opacity });
+                  // وميض الماركر (Label)
+        if (marker) {
+            marker.setOpacity(opacity);
+        }
               }, 50);
           }
-  
           // بدء التحريك
-          animateCircle(circle1);
-          animateCircle(circle2);
-          animateCircle(circle3);
-  
+          animateCircle(circle1, marker1);
+          animateCircle(circle2, marker2);
+          animateCircle(circle3, marker3);
           circlesVisible = true;
+          markersVisible = true;
       }
   }
   </script>
